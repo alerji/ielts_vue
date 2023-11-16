@@ -75,12 +75,15 @@
 
          </CCol>
          <CCol col="6">
-           <div style=" display: flex;">
+           <div style="text-align: left">
              <CButton @click="edit_item(season)"
+                      class="mr-1"
                       color="primary">
                ویرایش فصل
              </CButton>
              <CButton @click="add_episode(season)"
+                      class="mr-1"
+
                       color="success">
                افزودن قسمت
              </CButton>
@@ -94,19 +97,26 @@
      <CCardBody>
        <CCol col="12"   style="margin-bottom: 40px">
          <CRow style="padding: 5px;">
-           <CCol  v-for="episode in season.episodes" col="12" style="padding: 3px;color: white;">
-             <div style="padding: 3px; border: 1px solid grey;display: grid;position: relative;text-shadow: 1px 1px 4px black;">
-               <img  :src="episode.image" style="height: 100%;position: absolute"/>
-               <label style="z-index: 100;">{{episode.name}}</label>
-               <label style="z-index: 100;">{{episode.duration}}</label>
+           <CCol  v-for="episode in season.episodes" col="3" >
+             <CCard>
+               <CCardHeader style="justify-content: space-between;display: flex;">
+                 <label style="z-index: 100;">{{episode.name}}</label>
+                 <label style="z-index: 100;">{{episode.duration}}</label>
 
-               <div style="z-index: 100;" @click="edit_episode(episode,season)" datas="#"
-                    class="main__table-btn main__table-btn--edit">
-                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                   <path d="M22,7.24a1,1,0,0,0-.29-.71L17.47,2.29A1,1,0,0,0,16.76,2a1,1,0,0,0-.71.29L13.22,5.12h0L2.29,16.05a1,1,0,0,0-.29.71V21a1,1,0,0,0,1,1H7.24A1,1,0,0,0,8,21.71L18.87,10.78h0L21.71,8a1.19,1.19,0,0,0,.22-.33,1,1,0,0,0,0-.24.7.7,0,0,0,0-.14ZM6.83,20H4V17.17l9.93-9.93,2.83,2.83ZM18.17,8.66,15.34,5.83l1.42-1.41,2.82,2.82Z"/>
-                 </svg>
-               </div>
-             </div>
+               </CCardHeader>
+               <CCardBody>
+                 <img  :src="episode.image" style="width: 100%;"/>
+
+               </CCardBody>
+               <CCardFooter>
+                 <CButton
+                     color="warning"
+                     @click="edit_episode(episode,season)">
+                   ویرایش قسمت
+                 </CButton>
+               </CCardFooter>
+             </CCard>
+
 
            </CCol>
 
@@ -213,6 +223,11 @@ import ImageSelector from "@/views/includes/ImageSelector.vue";
                 this.status_form = item.id
             },
             edit_episode(item, season) {
+              this.episode_name= item.name;
+              this.episode_summary= item.summary;
+              this.episode_duration= item.duration;
+              this.episode_link= item.sources[0].link;
+              this.file_preview= item.image;
               this.episode_modal = true;
               this.status_form_episode = item.id;
               this.selected_season = season.id;
@@ -280,7 +295,7 @@ import ImageSelector from "@/views/includes/ImageSelector.vue";
 
             var formData = new FormData();
             var url = ""
-            if (this.status_form == 0) {
+            if (this.status_form_episode == 0) {
               url = "/api/insert_episode";
             } else {
               url = "/api/edit_episode"
