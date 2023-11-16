@@ -298,9 +298,10 @@ this.get_categories();
                 // })
             },get_categories(){
                var self = this;
-                console.log("route id "+this.$route.params.cat_id);
 
-                axios.get(  '/api/admin/product_categories/'+this.$route.params.cat_id, {
+            var formData = new FormData();
+            formData.append("cat_id",this.$route.params.cat_id);
+                axios.post(  '/api/admin/get_product_categories',formData, {
 
                 }).then(function (response) {
                     console.log("cats is "+response.data.orders);

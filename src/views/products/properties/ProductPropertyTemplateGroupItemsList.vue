@@ -162,8 +162,9 @@ this.get_categories();
             },get_categories(){
                var self = this;
                 // console.log("route id "+this.$route.params.cat_id);
-
-                axios.get(  '/api/admin/product_property-items/'+this.$route.params.group_id, {
+var formData = new FormData();
+            formData.append("id",+this.$route.params.group_id)
+                axios.post(  '/api/admin/get_product_property-items',formData, {
 
                 }).then(function (response) {
 

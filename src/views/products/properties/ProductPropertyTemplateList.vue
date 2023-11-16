@@ -172,8 +172,8 @@ this.get_categories();
             },get_categories(){
                var self = this;
                 console.log("route id "+this.$route.params.cat_id);
-
-                axios.get(  '/api/admin/product_property-templates', {
+var formData = new FormData();
+                axios.post(  '/api/admin/get_product_property-templates',formData, {
 
                 }).then(function (response) {
 

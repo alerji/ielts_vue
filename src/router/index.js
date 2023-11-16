@@ -4,6 +4,7 @@ import axios from "axios";
 import OrderList from "../views/orders/OrderList";
 import OrderInfo from "../views/orders/OrderInfo";
 import Redirect from "../views/redirect/Redirect";
+import Sources from "@/views/products/Sources.vue";
 // axios.defaults.headers.post['Authorization'] = localStorage.getItem('token');
 // Containers
 const TheContainer = () => import('@/containers/TheContainer')
@@ -247,6 +248,16 @@ function configRoutes() {
                             name: 'لیست محصولات',
                             props: true,
                             component: ProductList,
+                            meta: {
+                                requiresAuth: true,
+                                requiresRole: "insert_product"
+                            }
+                        },
+                        {
+                            path: 'sources/:id',
+                            name: 'منابع',
+                            props: true,
+                            component: Sources,
                             meta: {
                                 requiresAuth: true,
                                 requiresRole: "insert_product"

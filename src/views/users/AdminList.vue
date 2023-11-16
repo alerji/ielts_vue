@@ -213,8 +213,8 @@ this.get_admins();
             get_admins(){
                var self = this;
                 console.log("route id "+this.$route.params.cat_id);
-
-                axios.get(  '/api/admin/admins', {
+ var formData = new FormData();
+                axios.post(  '/api/admin/get_admins',formData, {
 
                 }).then(function (response) {
 

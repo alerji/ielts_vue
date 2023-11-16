@@ -93,7 +93,7 @@
                                         v-model="product_price"
                                         type="number"
                                         description="برای گزینه تماس بگیرید قیمت را صفر وارد کنید"
-                                        label="قیمت محصول"
+                                        label="قیمت محصول (پرداختی مشتری)"
 
                                 />
 
@@ -102,7 +102,17 @@
                                 <CInput
                                         v-model="old_price"
                                         type="number"
-                                        label="قیمت قدیم محصول"
+                                        label="قیمت قدیم محصول(بدون تخفیف)"
+
+                                />
+
+                            </CCol>
+                            <CCol sm="6">
+                                <CSelect
+                                    :options="[{label:'محصول فیزیکی',value:1},{label:'محصول دانلودی',value:2},{label:'محصول ویدئویی',value:3}]"
+                                        :value.sync="product_type"
+
+                                        label="نوع محصول"
 
                                 />
 
@@ -179,7 +189,7 @@
 </CRow>
 
                         <CRow>
-                            <CCol sm="4">
+                            <CCol sm="4" v-show="false">
                                 <label>تصویر محصول</label>
 
 
@@ -193,7 +203,7 @@
                                 />
                             </CCol>
 
-                            <CCol sm="4">
+                            <CCol sm="4" v-show="false">
                                 <label>ویدئو محصول</label>
 
 
@@ -223,7 +233,7 @@
                                         :value.sync="selected_property"/>
 
                             </CCol>
-                            <CCol sm="4">
+                            <CCol sm="4" v-show="false">
                                 <label>تصویر الگو</label>`
 
 
@@ -369,6 +379,7 @@
             return {
                 editorUrl: "https://furnishium.com/ckeditor/ckeditor.js",
                 gallery: [],
+              product_type: 3,
                 value_category: [],
                 value_tags: [],
                 value_keywords: [],
@@ -537,11 +548,7 @@
                     return {...item, id}
                 }),
                 fields_group,
-                role_items: items_role.map((item, id) => {
-                    return {...item, id}
-                }),
-                fields_role,
-                details: [],
+                              details: [],
                 collapseDuration: 0,
                 status_form: 0,
                 options: [
@@ -555,7 +562,6 @@
 
             this.get_categories();
             this.get_properties();
-            this.get_roles();
             this.get_colors();
 
         }, watch: {
@@ -612,9 +618,8 @@
             },
             get_categories() {
                 var self = this;
-                console.log("route id " + this.$route.params.cat_id);
-
-                axios.get('/api/product_all-categories', {}).then(function (response) {
+                var formData = new FormData();
+                axios.post('/api/product_all-categories',formData, {}).then(function (response) {
                     // console.log("cats is "+response.data.groups);
                     // console.log("cats is "+items);
 
@@ -637,8 +642,9 @@
             get_properties() {
                 var self = this;
                 console.log("route id " + this.$route.params.cat_id);
+              var formData = new FormData();
 
-                axios.get('/api/admin/product_property-templates', {}).then(function (response) {
+                axios.post('/api/admin/get_product_property-templates',formData, {}).then(function (response) {
                     // console.log("cats is "+response.data.groups);
                     // console.log("cats is "+items);
 
@@ -672,9 +678,9 @@
             },
             get_property_groups() {
                 var self = this;
-                console.log("route id " + this.$route.params.cat_id);
-
-                axios.get('/api/admin/product_property-groups-items/' + self.selected_property, {}).then(function (response) {
+              var formData = new FormData();
+              formData.append('property_id',self.selected_property)
+                axios.post('/api/admin/get_product_property-groups-items',formData, {}).then(function (response) {
                     // console.log("cats is "+response.data.groups);
                     // console.log("cats is "+items);
 
@@ -738,7 +744,9 @@
             },
             get_post_info() {
                 var self = this;
-                axios.get('/api/admin/product_info/' + self.status_form, {}).then(function (response) {
+                var formData = new FormData();
+                formData.append("product_id",self.status_form)
+                axios.post('/api/admin/get_product_info' ,formData, {}).then(function (response) {
                     var post_data = response.data;
 
                     self.previewImage = post_data.post.image;
@@ -757,6 +765,7 @@
                     self.selected_property = post_data.post.properties_group;
                     self.title = post_data.post.title;
                     self.code = post_data.post.code;
+                    self.product_type = post_data.post.product_type;
                     self.favorite_url = post_data.post.favorite_url;
                     self.editorData = post_data.post.summary;
                     self.editorData_full = post_data.post.full_summary;
@@ -795,31 +804,6 @@
                 this.$router.push({path: '/categories/' + this.items[index].cat_id});
 // this.get_categories();
                 // this.$router.push({ path: '/posts/'});
-            },
-            get_roles() {
-                var self = this;
-                console.log("route id " + this.$route.params.cat_id);
-
-                axios.get('/api/admin/roles', {}).then(function (response) {
-
-                    var content_cats = response.data;
-
-                    // items = content_cats.orders;
-                    self.role_items = content_cats.permissions.map((item, id) => {
-                        return {...item, id}
-                    }),
-                        fields_role;
-                    // console.log("cats is "+items);
-                    // self.description = '';
-                    // localStorage.setItem("api_token", response.data.access_token);
-                    // self.$router.push({ path: 'notes' });
-                })
-                    .catch(function (error) {
-                        self.message = 'Incorrect E-mail or password';
-                        self.showMessage = true;
-                        console.log(error);
-                    });
-
             },
             get_colors() {
                 var self = this;
@@ -918,6 +902,7 @@
                 formData.append('related_products', JSON.stringify(this.related_products));
                 formData.append('property_group_items', JSON.stringify(this.property_group_items));
                 formData.append('post_image', this.file);
+                formData.append('product_type', this.product_type);
                 formData.append('form_post_cat_list', this.value_category);
                 formData.append('form_post_tags', this.value_tags);
                 formData.append('form_post_keywords', this.value_keywords);
@@ -933,6 +918,7 @@
                 formData.append('product_video', this.video);
                 formData.append('pattern_image_file', this.pattern_image_file);
                 formData.append('product_color', JSON.stringify(this.selected_color));
+                formData.append('token', localStorage.getItem("token"));
 
                 // formData.append('is_admin', 1)
                 // formData.append('role_group', this.selected_group)

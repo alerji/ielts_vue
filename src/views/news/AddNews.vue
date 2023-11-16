@@ -500,8 +500,8 @@
             get_roles() {
                 var self = this;
                 console.log("route id " + this.$route.params.cat_id);
-
-                axios.get('/api/admin/roles', {}).then(function (response) {
+var formData = new FormData();
+                axios.post('/api/admin/roles',formData, {}).then(function (response) {
 
                     var content_cats = response.data;
 

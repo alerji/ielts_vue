@@ -213,9 +213,10 @@
 
             get_groups() {
                 var self = this;
-                console.log("route id " + this.$route.params.cat_id);
 
-                axios.get('/api/admin/role-groups', {}).then(function (response) {
+                var formData = new FormData();
+
+                axios.post('/api/admin/get_role-groups',formData, {}).then(function (response) {
                     // console.log("cats is "+response.data.groups);
                     // console.log("cats is "+items);
 
@@ -265,8 +266,9 @@
             get_roles() {
                 var self = this;
                 console.log("route id " + this.$route.params.cat_id);
+              var formData = new FormData();
 
-                axios.get('/api/admin/roles', {}).then(function (response) {
+                axios.post('/api/admin/roles',formData, {}).then(function (response) {
 
                     var content_cats = response.data;
 
