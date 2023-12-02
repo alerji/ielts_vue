@@ -6,7 +6,7 @@
                 <CRow>
                     <CCol>
                         <strong>
-                            اطلاعات سفارش
+                            افزودن سفارش
                         </strong>
                     </CCol>
                     <CCol class="text-left">
@@ -20,75 +20,43 @@
             </CCardHeader>
 
             <CCardBody class="">
+
                 <CRow>
-                    <CCol><label>شماره سفارش : {{order_info.id}}</label></CCol>
-                    <CCol><label>مشتری : {{order_info.user}}</label></CCol>
-                    <CCol><label>موبایل : {{order_info.user_mobile}}</label></CCol>
-                    <CCol><label>تاریخ ثبت : {{order_info.date}}</label></CCol>
-                </CRow>
-            </CCardBody>
-            <hr>
-            <CCardBody class="">
-<!--                <CRow>-->
-<!--                    <CCol><label>تاریخ رزرو : {{order_info.reserve_date}}</label></CCol>-->
-<!--                    <CCol><label>ساعت رزرو : {{order_info.reserve_time}}</label></CCol>-->
-<!--                    <CCol><label v-if="order_info.national_code !=null">کد ملی : {{order_info.national_code}}</label></CCol>-->
-<!--                </CRow>-->
-<!--                <CRow>-->
-<!--                    <CCol><label>آدرس : {{order_info.address}}</label></CCol>-->
-<!--                </CRow>-->
-<!--                <CRow>-->
-<!--                    <CCol><label>توضیحات : {{order_info.description}}</label></CCol>-->
-<!--                </CRow>-->
-                <hr>
-                <CRow>
-                    <CCol col="5">
-                        <CSelect
-                                :options="status_items"
-                                horizontal
-                                :value.sync="selected_status"
-                                label="انتخاب وضعیت"
+                    <CCol>
+                      محصولات
+                      <treeselect
+                          v-model="products"
+                          :multiple="true"
+                          :async="true"
+                          :load-options="load_products"
+                          placeholder="محصولات فاکتور"
+                          :normalizer="normalizer_products"
+                      />
+                    </CCol>
+                    <CCol>
+                      <CInput
+                        label="نام مشتری"
+                        v-model="user_name"
                         />
                     </CCol>
-                    <CCol col="3">
-
-                        <CButton
-                                color="primary"
-                                variant="outline"
-                                square
-                                size="sm"
-                                @click="change_status()"
-                        >تغییر وضعیت
-                        </CButton>
+                    <CCol>
+                      <CInput
+                        label="موبایل مشتری"
+                        v-model="user_mobile"
+                        />
                     </CCol>
+                    <CCol>
+                      <CSelect
+                          :options="status_items"
+
+                          :value.sync="selected_status"
+                          label="انتخاب وضعیت"
+                      />
+                    </CCol>
+
                 </CRow>
-                <hr>
-
+              <CButton @click="add_order()" outlined color="primary">افزودن سفارش</CButton>
             </CCardBody>
-            <CDataTable
-                    :items="order_info.products"
-                    :fields="fields"
-
-                    :items-per-page="20"
-                    hover
-                    sorter
-                    pagination
-            >
-                <template #row="{item,index}">
-                    <td>
-                        <p class="text-muted">{{index+1}}</p>
-                    </td>
-                </template>
-                <template #pre_definds="{item}">
-
-                    <td>
-                        <CBadge class="m-1" v-for=" pre in item.pre_definds" color="success"> {{pre}}</CBadge>
-                    </td>
-
-                </template>
-
-
-            </CDataTable>
 
         </CCard>
 
@@ -99,22 +67,35 @@
 <script>
     import axios from "axios";
     import {bus} from "../../main";
+    import Treeselect from '@riophae/vue-treeselect'
+    // import the styles
+    import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+
+    import {ASYNC_SEARCH} from "@riophae/vue-treeselect";
+
+    const simulateAsyncOperation = fn => {
+      setTimeout(fn, 200)
+    }
 
 
     export default {
         name: 'Login',
         components: {
+          Treeselect
             // Use the <ckeditor> component in this view.
             // ckeditor: CKEditor.component
         },
         data() {
             return {
+              user_name:'',
+              user_mobile:'',
                 delete_tag: new Date() + "_delete_confirm",
                 edit_row: null,
                 edit_flag: false,
                 edit_product_weight: '',
                 name: '',
-                fields: [
+
+              fields: [
                     {key: 'row', label: 'ردیف', _style: 'width:10%'},
                     {key: 'product', label: 'کالا', _style: 'width:10%;'},
 
@@ -158,12 +139,46 @@
                 items_sent: [],
                 details: [],
                 collapseDuration: 0,
-                status_form: 0
+                status_form: 0,
+              products: [],
+              normalizer_products(node) {
+                return {
+                  id: node.id,
+                  label: node.product_title,
+                }
+              },
+              load_products({action, searchQuery, callback}) {
+
+                if (action === ASYNC_SEARCH) {
+                  simulateAsyncOperation(() => {
+                    let options;
+                    var formData = new FormData();
+                    formData.append('search',searchQuery);
+                    axios.post('/api/admin/search-products', formData,{}).then(function (response) {
+                      options = response.data;
+                      callback(null, options);
+                      // localStorage.setItem("api_token", response.data.access_token);
+                      // self.$router.push({ path: 'notes' });
+                    })
+                        .catch(function (error) {
+                          self.message = 'Incorrect E-mail or password';
+                          self.showMessage = true;
+                          console.log(error);
+                        });
+
+
+                    //  const options = this.get_keywords(searchQuery);
+                    // const options = [1, 2, 3, 4, 5].map(i => ({
+                    //     id: `${searchQuery}-${i}`,
+                    //     name: `${searchQuery}-${i}`,
+                    // }))
+
+                  })
+                }
+              },
             }
         },
         mounted() {
-            this.get_news();
-            this.get_car_list();
             this.get_status_list();
             bus.$on(this.delete_tag, (data) => {
                 // alert(data);
@@ -182,13 +197,7 @@
                 console.log("val ", val)
                 this.product_weight_id = val;
             },
-            'selected_refer_car': function () {
-                var car_item = this.car_items.filter(x=>x.id = this.selected_refer_car)[0];
-                console.log("car changed",car_item)
 
-                this.car_refer_description = "قصاب"+": "+car_item.butcher +"  راننده:  "+ car_item.driver;
-
-            }
         },
         methods: {
             get_style(color) {
@@ -206,105 +215,39 @@
             go_show_product(item) {
                 window.open(process.env.VUE_APP_BASE_URL + "products/" + item.slug, "_blank");
             },
-            get_news() {
+            add_order() {
                 var self = this;
                 // console.log("route id "+this.$route.params.cat_id);
                 var formData = new FormData();
                 formData.append("id", this.$route.params.order_id);
                 formData.append("token", localStorage.getItem("token"));
-                axios.post('/api/admin/get_order', formData, {}).then(function (response) {
+                formData.append("user_name", this.user_name);
+                formData.append("user_mobile", this.user_mobile);
+                formData.append("status_id", this.selected_status);
+                formData.append("products", JSON.stringify(this.products));
+
+
+                axios.post('/api/admin/add_order', formData, {}).then(function (response) {
 
                     var contents = response.data;
 
                     self.order_info = contents.data;
                     self.order_info.products = contents.products;
+                  if (response.data.error == 1) {
+                    this.$root.modal_component.show_danger_modal('خطا', response.data.msg);
+
+                  } else {
+                    this.$root.modal_component.show_success_modal('تایید', response.data.msg);
+
+                  }
                     // self.description = '';
                     // localStorage.setItem("api_token", response.data.access_token);
                     // self.$router.push({ path: 'notes' });
                 })
                     .catch(function (error) {
-                        self.message = 'Incorrect E-mail or password';
-                        self.showMessage = true;
-                        console.log(error);
-                    });
+                      this.$root.modal_component.show_danger_modal('خطا', "خطا از سرور");
 
-            },
-            change_status() {
-                var self = this;
-                // console.log("route id "+this.$route.params.cat_id);
-                var formData = new FormData();
-                formData.append("id", this.$route.params.order_id);
-                formData.append("status", this.selected_status);
-                formData.append("token", localStorage.getItem("token"));
-                axios.post('/api/admin/change_order_status', formData, {}).then(function (response) {
-
-                    if (response.data.error == 1) {
-                        self.$root.modal_component.show_danger_modal('خطا', response.data.msg);
-
-                    } else {
-                        self.$root.modal_component.show_success_modal('تایید', response.data.msg);
-
-                    }
-                    self.get_news();
-
-                    // self.description = '';
-                    // localStorage.setItem("api_token", response.data.access_token);
-                    // self.$router.push({ path: 'notes' });
-                })
-                    .catch(function (error) {
-                        self.message = 'Incorrect E-mail or password';
-                        self.showMessage = true;
-                        console.log(error);
-                    });
-
-            },
-            add_order_car_relation() {
-                var self = this;
-                // console.log("route id "+this.$route.params.cat_id);
-                var formData = new FormData();
-                formData.append("car_id", this.selected_refer_car);
-                formData.append("order_id", this.$route.params.order_id);
-                formData.append("token", localStorage.getItem("token"));
-                axios.post('/api/admin/add_order_car_relation', formData, {}).then(function (response) {
-
-                    if (response.data.error == 1) {
-                        self.$root.modal_component.show_danger_modal('خطا', response.data.msg);
-
-                    } else {
-                        self.$root.modal_component.show_success_modal('تایید', response.data.msg);
-
-                    }
-                    self.get_news();
-
-                })
-                    .catch(function (error) {
-                        self.message = 'Incorrect E-mail or password';
-                        self.showMessage = true;
-                        console.log(error);
-                    });
-
-            },
-            get_car_list() {
-                var self = this;
-                // console.log("route id "+this.$route.params.cat_id);
-                // var formData = new FormData();
-
-                axios.get('/api/admin/get_cars', {}).then(function (response) {
-
-                    var contents = response.data;
-
-                    contents.data.forEach((val) => {
-                        // var obj = {label: val.car_name, value: val.id}
-                        val.value = val.id;
-                        val.label = val.car_name;
-                        self.car_items.push(val);
-                    });
-
-                    self.selected_refer_car = self.car_items[0].value;
-
-                })
-                    .catch(function (error) {
-                        console.log(error);
+                      console.log(error);
                     });
 
             },

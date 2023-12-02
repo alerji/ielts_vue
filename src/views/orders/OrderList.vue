@@ -11,9 +11,9 @@
 
             <CCardBody class="">
                 <CTabs>
-                    <CTab title="ثبت شده" active>
+                    <CTab :title="status.label" v-for="status in items_status">
                         <CDataTable
-                                :items="items_active"
+                                :items="items.filter(x=>x.status==status.value)"
                                 :fields="fields"
 
                                 :items-per-page="20"
@@ -32,8 +32,8 @@
 
                             <template #payment="{item}">
                                 <td>
-                                    <p v-if="item.payment.length==0" class="text-danger">پرداخت نشده</p>
-                                    <p v-if="item.payment.length>0" class="text-success">پرداخت شده</p>
+                                    <p v-if="item.payment==null" class="text-danger">پرداخت نشده</p>
+                                    <p v-else class="text-success">پرداخت شده</p>
                                 </td>
                             </template>
                             <template #عملیات="{item,index}">
@@ -54,184 +54,7 @@
 
                         </CDataTable>
                     </CTab>
-                    <CTab title="پرداخت شده" >
-                        <CDataTable
-                                :items="items_process"
-                                :fields="fields"
 
-                                :items-per-page="20"
-                                hover
-                                sorter
-                                pagination
-                        >
-                            <template #ردیف="{item}">
-
-                                <td>
-                                    <p class="text-muted">{{item.row_id}}</p>
-
-                                </td>
-
-                            </template>
-
-
-                            <template #payment="{item}">
-                                <td>
-                                    <p v-if="item.payment.length==0" class="text-danger">پرداخت نشده</p>
-                                    <p v-if="item.payment.length>0" class="text-success">پرداخت شده</p>
-                                </td>
-                            </template>
-
-                            <template #عملیات="{item,index}">
-                                <td class="py-2">
-                                    <CButton
-                                            color="primary"
-                                            variant="outline"
-                                            square
-                                            size="sm"
-                                            @click="goRegister(item)"
-                                    >نمایش
-                                    </CButton>
-
-                                </td>
-                            </template>
-
-
-
-                        </CDataTable>
-
-                    </CTab>
-                    <CTab title="در حال اماده سازی" >
-                        <CDataTable
-                                :items="items_in_way"
-                                :fields="fields"
-
-                                :items-per-page="20"
-                                hover
-                                sorter
-                                pagination
-                        >
-                            <template #ردیف="{item}">
-
-                                <td>
-                                    <p class="text-muted">{{item.row_id}}</p>
-                                </td>
-
-                            </template>
-
-                            <template #payment="{item}">
-                                <td>
-                                    <p v-if="item.payment.length==0" class="text-danger">پرداخت نشده</p>
-                                    <p v-if="item.payment.length>0" class="text-success">پرداخت شده</p>
-                                </td>
-                            </template>
-
-                            <template #عملیات="{item,index}">
-                                <td class="py-2">
-                                    <CButton
-                                            color="primary"
-                                            variant="outline"
-                                            square
-                                            size="sm"
-                                            @click="goRegister(item)"
-                                    >نمایش
-                                    </CButton>
-
-                                </td>
-                            </template>
-
-
-
-                        </CDataTable>
-
-                    </CTab>
-                    <CTab title="در حال ارسال" >
-                        <CDataTable
-                                :items="items_sent"
-                                :fields="fields"
-
-                                :items-per-page="20"
-                                hover
-                                sorter
-                                pagination
-                        >
-                            <template #ردیف="{item}">
-
-                                <td>
-                                    <p class="text-muted">{{item.row_id}}</p>
-
-                                </td>
-
-                            </template>
-
-                            <template #payment="{item}">
-                                <td>
-                                    <p v-if="item.payment.length==0" class="text-danger">پرداخت نشده</p>
-                                    <p v-if="item.payment.length>0" class="text-success">پرداخت شده</p>
-                                </td>
-                            </template>
-                            <template #عملیات="{item}">
-                                <td class="py-2">
-                                    <CButton
-                                            color="primary"
-                                            variant="outline"
-                                            square
-                                            size="sm"
-                                            @click="goRegister(item)"
-                                    >نمایش
-                                    </CButton>
-
-                                </td>
-                            </template>
-
-
-
-                        </CDataTable>
-
-                    </CTab>
-                    <CTab title="اتمام کار" >
-                        <CDataTable
-                                :items="items_canceled"
-                                :fields="fields"
-
-                                :items-per-page="20"
-                                hover
-                                sorter
-                                pagination
-                        >
-                            <template #ردیف="{item}">
-
-                                <td>
-                                    <p class="text-muted">{{item.row_id}}</p>
-
-                                </td>
-
-                            </template>
-                            <template #payment="{item}">
-                                <td>
-                                    <p v-if="item.payment.length==0" class="text-danger">پرداخت نشده</p>
-                                    <p v-if="item.payment.length>0" class="text-success">پرداخت شده</p>
-                                </td>
-                            </template>
-
-                            <template #عملیات="{item}">
-                                <td class="py-2">
-                                    <CButton
-                                            color="primary"
-                                            variant="outline"
-                                            square
-                                            size="sm"
-                                            @click="goRegister(item)"
-                                    >نمایش
-                                    </CButton>
-
-                                </td>
-                            </template>
-
-
-
-                        </CDataTable>
-
-                    </CTab>
                 </CTabs>
             </CCardBody>
         </CCard>
@@ -282,17 +105,14 @@
                     {key: 'user',label: 'مشتری', _style: 'width:10%'},
                     {key: 'price',label: 'مبلغ', _style: 'width:10%;'},
                     {key: 'payment',label: 'وضعیت پرداخت', _style: 'width:10%;'},
-                    {key: 'national_code',label: 'کد ملی', _style: 'width:10%;'},
+                    // {key: 'national_code',label: 'کد ملی', _style: 'width:10%;'},
                     // {key: 'reserve_time',label: 'ساعت رزرو', _style: 'width:10%;'},
                     {key: 'عملیات',label: 'عملیات', _style: 'width:30%;'},
 
                 ],
+items_status:[{label:'ثبت شده',value:1},{label:'پرداخت شده',value:2}],
+                items: [],
 
-                items_active: [],
-                items_process: [],
-                items_in_way:  [],
-                items_sent:  [],
-                items_canceled:  [],
                 details: [],
                 collapseDuration: 0,
                 status_form: 0
@@ -355,7 +175,7 @@
                 var self = this;
                 // console.log("route id "+this.$route.params.cat_id);
 
-                axios.get('/api/admin/orders', {}).then(function (response) {
+                axios.post('/api/admin/get_all_orders', {}).then(function (response) {
 
                     var contents = response.data;
 
@@ -363,11 +183,7 @@
                         return {...item, row_id}
                     });
 
-                    self.items_active = data_filter.filter(x=>x.status==1);
-                    self.items_process = data_filter.filter(x=>x.status==2);
-                    self.items_in_way = data_filter.filter(x=>x.status==3);
-                    self.items_sent = data_filter.filter(x=>x.status==4);
-                    self.items_canceled = data_filter.filter(x=>x.status==5);
+                    self.items = data_filter;
 
                     // self.description = '';
                     // localStorage.setItem("api_token", response.data.access_token);

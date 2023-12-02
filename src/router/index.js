@@ -5,6 +5,7 @@ import OrderList from "../views/orders/OrderList";
 import OrderInfo from "../views/orders/OrderInfo";
 import Redirect from "../views/redirect/Redirect";
 import Sources from "@/views/products/Sources.vue";
+import AddOrder from "@/views/orders/AddOrder";
 // axios.defaults.headers.post['Authorization'] = localStorage.getItem('token');
 // Containers
 const TheContainer = () => import('@/containers/TheContainer')
@@ -583,6 +584,15 @@ function configRoutes() {
                             name: 'اطلاعات سفارش',
                             props: true,
                             component: OrderInfo,
+                            meta: {
+                                requiresAuth: true,
+                                requiresRole: "edit_settings"
+                            }
+                        }, {
+                            path: 'add-order',
+                            name: 'افزودن سفارش',
+                            props: true,
+                            component: AddOrder,
                             meta: {
                                 requiresAuth: true,
                                 requiresRole: "edit_settings"
