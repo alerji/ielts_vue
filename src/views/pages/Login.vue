@@ -1,64 +1,52 @@
 <template>
     <CContainer class="d-flex content-center min-vh-100">
-        <CRow>
+          <CRow>
             <CCol>
-                <CCardGroup>
-                    <CCard class="p-4">
-                        <CCardBody>
-                            <CForm>
-                                <h1>ورود</h1>
-                                <p class="text-muted">ورود به پنل کاربری</p>
-                                <CInput
-                                    placeholder="شماره موبایل"
-                                    autocomplete="username email"
-                                    v-model="user"
+              <CCardGroup>
+                <CCard class="p-4">
+                  <CCardBody>
+                    <CForm v-on:keyup.enter="login()">
+                      <img  width="120px" height="auto" src="/img/panel_icon.png"/>
+                      <h4 class="mt-3">ورود</h4>
+                      <CInput
+                          placeholder="نام کاربری"
+                          v-model="user"
+                      >
+                        <template #prepend-content>
+                          <CIcon name="cil-user"/>
+                        </template>
+                      </CInput>
+                      <CInput
+                          placeholder="رمز عبور"
+                          type="password"
+                          v-model="pass"
+                      >
+                        <template #prepend-content>
+                          <CIcon name="cil-lock-locked"/>
+                        </template>
+                      </CInput>
+                      <CRow>
+                        <CCol col="12" class="text-center">
 
-                                >
-                                    <template #prepend-content>
-                                        <CIcon name="cil-user"/>
-                                    </template>
-                                </CInput>
-                                <CInput
-                                    placeholder="رمز عبور"
-                                    type="password"
-                                    v-model="pass"
-                                    autocomplete="curent-password"
-                                >
-                                    <template #prepend-content>
-                                        <CIcon name="cil-lock-locked"/>
-                                    </template>
-                                </CInput>
-                                <CRow>
-                                    <CCol col="6" class="text-left">
-                                        <CButton color="primary" v-on:click="login()" class="px-4">ورود</CButton>
-                                    </CCol>
-                                    <CCol col="6" class="text-right">
-                                        <CButton color="link" class="px-0">رمز عبور خود را فراموش کرده اید؟</CButton>
-                                        <CButton color="link" class="d-md-none">ثبت نام کنید</CButton>
-                                    </CCol>
-                                </CRow>
-                            </CForm>
-                        </CCardBody>
-                    </CCard>
-                    <CCard
-                        color="primary"
-                        text-color="white"
-                        class="text-center py-5 d-sm-down-none"
-                        body-wrapper
-                    >
-                        <h2>ثبت نام</h2>
-                        <p>برای استفاده از تمامی امکانات سایت ثبت نام کنید</p>
-                        <CButton
-                            color="primary"
-                            class="active mt-3"
-                            v-on:click="goRegister()"
-                        >
-                            همین حالا ثبت نام کنید
-                        </CButton>
-                    </CCard>
-                </CCardGroup>
+
+                          <CButton color="primary" v-on:click="login()" class="px-4">
+                            <CSpinner v-if="loading" size="sm"/>
+                            ورود
+                          </CButton>
+                          <CRow class="mt-3">
+
+                            <label @click="forgot_password_modal=true">فراموشی رمز عبور</label>
+                          </CRow>
+                        </CCol>
+                        <CCol col="6" class="text-right">
+                        </CCol>
+                      </CRow>
+                    </CForm>
+                  </CCardBody>
+                </CCard>
+              </CCardGroup>
             </CCol>
-        </CRow>
+          </CRow>
         <Modals ref="modal"/>
 
     </CContainer>
@@ -97,21 +85,11 @@
                 const formData = new FormData()
                 let url = "/api/admin/login";
 
-// axios.defaults.headers= {
-//     'Content-Type': 'application/json',
-//     'Access-Control-Allow-Origin': '*',
-//     'Access-Control-Allow-Headers': '*',
-//     'Accept': 'application/json, text/plain'
-//
-// };
-
                 formData.append('user', this.user)
                 formData.append('pass', this.pass)
 
                 axios.post(url, formData).then((res) => {
                     console.log(res)
-                    // console.log(res.headers.value('token'));
-// res.headers.value('token');
                   if(res.data.error==1){
                       this.$refs.modal.show_danger_modal('خطا',res.data.msg);
 
@@ -121,8 +99,6 @@
                       this.$router.push({ path: '/dashboard'});
 
                   }
-
-                    // Modals.show_danger_modal('sss',"sdsddd",[]);
 
 
                 })

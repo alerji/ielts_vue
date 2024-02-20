@@ -6,6 +6,8 @@ import OrderInfo from "../views/orders/OrderInfo";
 import Redirect from "../views/redirect/Redirect";
 import Sources from "@/views/products/Sources.vue";
 import AddOrder from "@/views/orders/AddOrder";
+import CustomerList from "@/views/users/CustomerList.vue";
+import CustomerDetail from "@/views/users/CustomerDetail.vue";
 // axios.defaults.headers.post['Authorization'] = localStorage.getItem('token');
 // Containers
 const TheContainer = () => import('@/containers/TheContainer')
@@ -188,6 +190,24 @@ function configRoutes() {
                             name: 'کاربران',
                             props: true,
                             component: UserList,
+                            meta: {
+                                requiresAuth: true,
+                                requiresRole: "edit_admins"
+                            }
+                        }, {
+                            path: 'customers',
+                            name: 'مشتریان',
+                            props: true,
+                            component: CustomerList,
+                            meta: {
+                                requiresAuth: true,
+                                requiresRole: "edit_admins"
+                            }
+                        }, {
+                            path: 'user-detail/:id',
+                            name: 'اطلاعات مشتری',
+                            props: true,
+                            component: CustomerDetail,
                             meta: {
                                 requiresAuth: true,
                                 requiresRole: "edit_admins"

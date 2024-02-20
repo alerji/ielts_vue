@@ -1,27 +1,28 @@
 import {
-  cibFacebook,
-  cibTwitter,
-  cibLinkedin,
-  cibFlickr,
-  cibTumblr,
-  cibXing,
-  cibGithub,
-  cibStackoverflow,
-  cibYoutube,
-  cibDribbble,
-  cibInstagram,
-  cibPinterest,
-  cibVk,
-  cibYahoo,
-  cibBehance,
-  cibReddit,
-  cibVimeo,
-  cibCcMastercard,
-  cibCcVisa,
-  cibStripe,
-  cibPaypal,
-  cibGooglePay, 
-  cibCcAmex
+    cibFacebook,
+    cibTwitter,
+    cibLinkedin,
+    cibFlickr,
+    cibTumblr,
+    cibXing,
+    cibGithub,
+    cibStackoverflow,
+    cibYoutube,
+    cibDribbble,
+    cibInstagram,
+    cibPinterest,
+    cibVk,
+    cibYahoo,
+    cibBehance,
+    cibReddit,
+    cibVimeo,
+    cibCcMastercard,
+    cibCcVisa,
+    cibStripe,
+    cibPaypal,
+    cibGooglePay,
+
+    cibCcAmex, cilPlus, cilMinus, cilFolder, cilClone
 } from '@coreui/icons'
 import {
   cifUs,
@@ -76,14 +77,20 @@ import {
   cilUser,
   cilUserFemale,
   cilUserFollow,
+  cilReload,
+    cilCart,
+    cilTrash,
+    cilAddressBook,
+    cilMonitor,
+    cilTranslate,
   cilXCircle
 
 } from '@coreui/icons'
-import { logo } from './logo'
+import { logo,eye ,page} from './logo'
 
 export const iconsSet = Object.assign(
   {},
-  { logo },
+  { logo,eye,page },
   {
     cilArrowRight,
     cilBan,
@@ -123,11 +130,16 @@ export const iconsSet = Object.assign(
     cilSettings,
     cilShieldAlt,
     cilSpeech,
+      cilPlus,
+      cilMinus,
     cilSpeedometer,
     cilStar,
     cilTask,
     cilUser,
-    cilUserFemale,
+      cilAddressBook,
+      cilMonitor,
+      cilUserFemale,
+      cilCart,
     cilUserFollow,
     cilXCircle
   },
@@ -162,6 +174,12 @@ export const iconsSet = Object.assign(
     cibStripe, 
     cibPaypal, 
     cibGooglePay,
+    cilReload,
+      cilPlus,
+      cilTranslate,
+      cilFolder,
+      cilClone,
+      cilTrash,
     cibCcAmex
   }
 )
